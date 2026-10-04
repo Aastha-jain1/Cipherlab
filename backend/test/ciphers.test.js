@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { atbash, caesar, sha256, vigenere, xorDecrypt, xorEncrypt } from '../src/services/ciphers.js';
+import { validateCipher, validateHash } from '../src/utils/validation.js';
+test('Caesar encrypts and decrypts while retaining punctuation', () => { const encrypted = caesar('Hello, World!', 3); assert.equal(encrypted, 'Khoor, Zruog!'); assert.equal(caesar(encrypted, 3, true), 'Hello, World!'); });
+test('Vigenere encrypts and decrypts', () => { const encrypted = vigenere('Attack at dawn!', 'LEMON'); assert.equal(encrypted, 'Lxfopv ef rnhr!'); assert.equal(vigenere(encrypted, 'LEMON', true), 'Attack at dawn!'); });
+test('Atbash is symmetric', () => assert.equal(atbash(atbash('Hello!')), 'Hello!'));
+test('XOR base64 round trip', () => assert.equal(xorDecrypt(xorEncrypt('secret text', 'key'), 'key'), 'secret text'));
+test('SHA-256 has expected digest', () => assert.equal(sha256('hello'), '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824'));
+test('validation rejects unsafe requests', () => { assert.ok(validateCipher({ text: '', algorithm: 'caesar', key: 1 })); assert.ok(validateCipher({ text: 'x', algorithm: 'caesar', key: 26 })); assert.ok(validateCipher({ text: 'x', algorithm: 'bad', key: '' })); assert.ok(validateHash({ text: '' })); });

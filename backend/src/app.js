@@ -1,0 +1,12 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import api from './routes/api.js';
+const app = express();
+app.use(helmet());
+app.use(cors({ origin: process.env.CLIENT_ORIGIN?.split(',') || 'http://localhost:5173', methods: ['GET', 'POST'] }));
+app.use(express.json({ limit: '20kb' }));
+app.use('/api', rateLimit({ windowMs: 900000, limit: 100, standardHeaders: 'draft-7', legacyHeaders: false }), api);
+app.use((error, req, res, next) => { console.error('Request failed:', error.name); res.status(500).json({ error: 'The operation could not be completed. Please try again.' }); });
+export default app;
