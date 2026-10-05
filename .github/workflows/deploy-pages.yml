@@ -29,7 +29,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install --include=optional
+        run: npm install --include=optional --package-lock=false
 
       - name: Build frontend
         run: npm run build --workspace frontend
